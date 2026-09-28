@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import routes from "./routes/routes.js";
+import "./config/redis.js"
 dotenv.config();
 connectDB();
 

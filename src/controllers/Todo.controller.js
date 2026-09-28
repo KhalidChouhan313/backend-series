@@ -1,5 +1,6 @@
 import AsyncHandler from "express-async-handler";
 import Todo from "../models/Todo.model.js";
+import redisClient from "../config/redis.js";
 
 export const CreateTodo = AsyncHandler(async (req, res) => {
     const { title, description } = req.body;
@@ -13,6 +14,15 @@ export const CreateTodo = AsyncHandler(async (req, res) => {
 
 export const GetTodos = AsyncHandler(async (req, res) => {
     const { search, completed, page = 1, limit = 10 } = req.query;
+
+    const cacheKey = `todos:${search || ""}:${completed || ""}:${page}:${limit}`;
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        return res.status(200).json({
+            ...JSON.parse(cached),
+            source: "cache"
+        });
+    }
     const filter = {};
     if (search) {
         filter.$or = [
@@ -37,6 +47,8 @@ export const GetTodos = AsyncHandler(async (req, res) => {
             totalPages: Math.ceil(total / Number(limit))
         }
     });
+    await redisClient.setEx(cacheKey, 60, JSON.stringify(response))
+    res.status(200).json({ ...response, source: "database" });
 })
 
 export const UpdateTodo = AsyncHandler(async (req, res) => {
