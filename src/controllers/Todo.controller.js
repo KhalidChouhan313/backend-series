@@ -2,12 +2,20 @@ import AsyncHandler from "express-async-handler";
 import Todo from "../models/Todo.model.js";
 import redisClient from "../config/redis.js";
 import { clearCache } from "../middlewares/cache.middleware.js";
+import { SendWebhook } from "../utils/sendWebhook.js";
 
 export const CreateTodo = AsyncHandler(async (req, res) => {
     const { title, description } = req.body;
     const todo = await Todo.create({ title, description });
 
     await clearCache("todos");
+    SendWebhook("https://webhook.site/f20dafcc-7f50-4c37-84d9-90bacec546bb", {
+        event: "todo.created",
+        data: {
+            id: todo._id,
+            title: todo.title
+        }
+    });
     res.status(201).json({
         success: true,
         message: "Todo created successfully",
