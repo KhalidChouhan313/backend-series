@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import routes from "./routes/routes.js";
 import "./config/redis.js"
+import { startTodoJobs } from "./jobs/todo.jobs.js";
 dotenv.config();
 connectDB();
 
@@ -17,5 +18,7 @@ app.use("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
+    startTodoJobs();
+
     console.log(`Server is running on port http://localhost:${PORT}`);
 });

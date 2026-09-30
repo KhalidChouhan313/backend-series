@@ -12,6 +12,13 @@ const todoSchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
+    },
+    dueDate:{
+        type: Date,
+    },
+    reminderDate:{
+        type: Boolean,
+        default: false
     }
 },
     {
