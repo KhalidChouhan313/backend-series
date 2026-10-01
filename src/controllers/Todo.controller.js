@@ -5,8 +5,8 @@ import { clearCache } from "../middlewares/cache.middleware.js";
 import { SendWebhook } from "../utils/sendWebhook.js";
 
 export const CreateTodo = AsyncHandler(async (req, res) => {
-    const { title, description } = req.body;
-    const todo = await Todo.create({ title, description });
+    const { title, description,dueDate } = req.body;
+    const todo = await Todo.create({ title, description, dueDate });
 
     await clearCache("todos");
     SendWebhook("https://webhook.site/f20dafcc-7f50-4c37-84d9-90bacec546bb", {

@@ -4,13 +4,14 @@ import { SendWebhook } from "../utils/sendWebhook.js";
 import { clearCache } from "../middlewares/cache.middleware.js";
 
 export const startTodoJobs = () => {
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("*/10 * * * * *", async () => {
         try {
             const dueTodos = await Todo.find({
                 dueDate: { $lte: new Date() },
-                reminderDate: false,
+                reminderDate: { $ne: true },
                 completed: false,
             })
+            console.log("Due todos found:", dueTodos.length);
 
             for (const todo of dueTodos) {
                 SendWebhook("https://webhook.site/f20dafcc-7f50-4c37-84d9-90bacec546bb", {
