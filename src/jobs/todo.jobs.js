@@ -14,12 +14,16 @@ export const startTodoJobs = () => {
             console.log("Due todos found:", dueTodos.length);
 
             for (const todo of dueTodos) {
+                const updated = await Todo.findOneAndUpdate(
+                    { _id: todo._id, reminderSent: { $ne: true } },
+                    { reminderSent: true }
+                );
+                if (!updated) continue;
+
                 SendWebhook("https://webhook.site/f20dafcc-7f50-4c37-84d9-90bacec546bb", {
                     event: "todo.reminder",
                     data: { id: todo._id, title: todo.title }
                 });
-                todo.reminderSent = true;
-                await todo.save();
             }
         } catch (err) {
             console.error("Reminder job failed:", err.message);

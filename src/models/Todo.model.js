@@ -16,10 +16,7 @@ const todoSchema = new mongoose.Schema({
     dueDate:{
         type: Date,
     },
-    reminderDate:{
-        type: Boolean,
-        default: false
-    }
+   
 },
     {
         timestamps: true
